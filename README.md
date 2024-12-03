@@ -10,7 +10,7 @@ This work is developed in the ambit of curricular unit intelligent systems for b
 This work consists in the analysis of a dataset through the utilization of machine learning algorithms, recurring to Python as the programming language.
 The entire analysis is present on a Jupyter Notebook, organized in sections (explained later on) containing succinct explanations of the procedures and decisions taken throughout the analysis.
 
-For this work we selected the [GDSC1](https://tdcommons.ai/multi_pred_tasks/drugres) dataset. This dataset contains the wet lab IC50 for 208 drugs in 1000 cancer cells lines and can be used to design models that can predict drug response since the same compound can have differents levels of responses in different patients. With this we aim to design a model that given a pair of drug and cell line genomics profile can predict the drug response and find the best drug to treat certain patient. In this dataset the RMD normalized gene expression was used for cancer lines and the SMILES for drugs. Y is the log normalized IC50.
+For this work we selected the [GDSC1](https://tdcommons.ai/multi_pred_tasks/drugres) dataset. This dataset contains the wet lab IC50 for 208 drugs in 1000 cancer cells lines and can be used to design models that can predict drug response since the same compound can have different levels of responses in different patients. With this we aim to design a model that given a pair of drug and cell line genomics profile can predict the drug response and find the best drug to treat certain patient. In this dataset the RMD normalized gene expression was used for cancer lines and the SMILES for drugs. Y is the log normalized IC50.
 
 To have access to the dataset use the following code
 
@@ -21,14 +21,14 @@ split = data.get_split()
 ```
 
 ## Notebook sections
-### 1.Preprocessing and data exploration
+### 1. Preprocessing and data exploration
 - Review of all documentation available about the dataset
-- Load the dataset and realize a exploratory analysis 
+- Load the dataset and realize an exploratory analysis 
 - Prepare the dataset with the generation and selection of features and treatment of the missing values 
 
 This stage corresponds to the 1st section of the Notebook where:
 - The dataset must the described according to the documentation
-- Summarize the characteristics of the data trought an exploratory analysis
+- Summarize the characteristics of the data through an exploratory analysis
 - Description of the preprocessing steps justifying the choices
 - Include graphics that represent the main characteristics of the dataset
 
