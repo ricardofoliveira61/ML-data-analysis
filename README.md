@@ -1,16 +1,20 @@
 # Intelligent systems for bioinformatics- Group 1
 
 This work is developed in the ambit of curricular unit intelligent systems for bioinformatics of the Bioinformatic Master by:
-- [Beatriz Santos](https://github.com/beatrizsantos1607)
-- [Duarte Velho](https://github.com/duartebred)
-- [Ricardo Oliveira](https://github.com/ricardofoliveira61)
-- [Rita Nobrega](https://github.com/ritanobrega00)
-- [Rodrigo Esperança](https://github.com/esperancaa)
+- [Beatriz Santos](https://github.com/beatrizsantos1607) (pg46723)
+- [Duarte Velho](https://github.com/duartebred) (pg53481)
+- [Ricardo Oliveira](https://github.com/ricardofoliveira61) (pg53501)
+- [Rita Nobrega](https://github.com/ritanobrega00) (pg46733)
+- [Rodrigo Esperança](https://github.com/esperancaa) (pg50923)
 
+<div align="justify">
 This work consists in the analysis of a dataset through the utilization of machine learning algorithms, recurring to Python as the programming language.
 The entire analysis is present on a Jupyter Notebook, organized in sections (explained later on) containing succinct explanations of the procedures and decisions taken throughout the analysis.
+</div>
 
+<div align="justify">
 For this work we selected the [GDSC1](https://tdcommons.ai/multi_pred_tasks/drugres) dataset. This dataset contains the wet lab IC50 for 208 drugs in 1000 cancer cells lines and can be used to design models that can predict drug response since the same compound can have different levels of responses in different patients. With this we aim to design a model that given a pair of drug and cell line genomics profile can predict the drug response and find the best drug to treat certain patient. In this dataset the RMD normalized gene expression was used for cancer lines and the SMILES for drugs. Y is the log normalized IC50.
+</div>
 
 To have access to the dataset use the following code
 
