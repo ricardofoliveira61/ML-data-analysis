@@ -1,3 +1,7 @@
 data/gdsc_gene_symbols.tab
 data/gdsc1.pkl
 data/filtered_GDSC.pkl
+data/filtered_cell_line.csv
+data/filtered_cell_line.pkl
+data/filtered_gene_expression.csv
+data/random_samples.pkl
