@@ -1,16 +1,13 @@
 import tensorflow as tf
-from tensorflow.keras.layers import AlphaDropout, Activation, Dense, Dropout, BatchNormalization, Input, add
+from tensorflow import math
+from deepchem.models.layers import Highway, DTNNEmbedding
+from tensorflow.keras.layers import AlphaDropout, Activation, Dense, Dropout, BatchNormalization, Input, Conv1D, Lambda, Concatenate, add, LSTM, Bidirectional
 from tensorflow.python.keras.layers.advanced_activations import LeakyReLU, PReLU
 from ast import literal_eval
 from tensorflow.keras.regularizers import l1_l2
-from spektral.layers import GlobalSumPool, GATConv
-from ast import literal_eval
-from spektral.layers import GlobalSumPool, GATConv
-import tensorflow as tf
-from tensorflow.keras.layers import Input, Dense, Dropout, BatchNormalization, Activation, \
-	AlphaDropout, add
-from tensorflow.keras.regularizers import l1_l2
-from tensorflow.python.keras.layers.advanced_activations import LeakyReLU, PReLU
+from inspect import getmembers
+from tensorflow.keras.metrics import MeanSquaredError, RootMeanSquaredError
+from spektral.layers import GCNConv, GlobalSumPool, GATConv
 
 
 def dense_submodel(input_layer, hlayers_sizes='[10]', l1_regularization=0, l2_regularization=0,
@@ -74,31 +71,3 @@ def dense_submodel(input_layer, hlayers_sizes='[10]', l1_regularization=0, l2_re
 			x = dropout(rate=hidden_dropout)(x)
 
 	return x
-
-def gat_submodel(n_atom_features, gat_layers='[64, 64]', n_attention_heads=8, concat_heads=True, residual=False,
-                 dropout_rate=0.5, l2=0):
-	"""Build a Graph Attention Network (GAT) (Velickovic et al, 2018) submodel."""
-	gat_layers = literal_eval(gat_layers)
-	regularizer = l1_l2(l1=0, l2=l2)
-	nodes_input = Input(shape=(None, n_atom_features))
-	adjacency_input = Input(shape=(None, None))
-	node_feats = nodes_input
-	for n_channels in gat_layers:
-		x = GATConv(n_channels, activation='elu', attn_heads=n_attention_heads, concat_heads=concat_heads,
-		            dropout_rate=dropout_rate, kernel_initializer='he_normal',
-		            kernel_regularizer=regularizer, attn_kernel_regularizer=regularizer,
-		            bias_regularizer=regularizer)([node_feats, adjacency_input])
-		if residual:  # add a drug_residual_connection connection (as in the implementation of GATPredictor in DGL LifeSci)
-			if concat_heads:
-				res_feats = Dense(n_channels * n_attention_heads)(
-					node_feats)  # according to the implementation of residual connections for GATConv in DGL
-			else:
-				res_feats = Dense(n_channels)(node_feats)
-			x = add([x, res_feats])  # drug_residual_connection connection
-		x = Dropout(dropout_rate)(x)
-		node_feats = x
-	x = GlobalSumPool()(x)
-
-	submodel = tf.keras.Model(inputs=[nodes_input, adjacency_input], outputs=[x], name='drug_gat_submodel')
-
-	return submodel

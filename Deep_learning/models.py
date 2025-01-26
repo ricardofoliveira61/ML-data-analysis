@@ -1,5 +1,6 @@
-from Deep_learning.submodels import dense_submodel, gat_submodel
+from submodels import dense_submodel
 import tensorflow as tf
+from ast import literal_eval
 from tensorflow.keras.layers import Input, Concatenate, Dense
 from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -44,11 +45,12 @@ class DenseModel:
     Returns
     -------
     keras.Model
-        Multi-input model for drug response prediction.  
+        Multi-input model for drug response prediction.
+        
     """
     def __init__(self, expr_dim=None, drug_dim=None, expr_hlayers_sizes='[10]', drug_hlayers_sizes='[10]',
                           predictor_hlayers_sizes='[10]', initializer='he_normal', hidden_activation='relu', l1=0,
-                          l2=0, input_dropout=0, hidden_dropout=0, optimizer='Adam', learning_rate=0.001):
+                          l2=0, input_dropout=0, hidden_dropout=0, optimizer='Adam', learn_rate=0.001):
         self.cell_line_feature_size = expr_dim
         self.drug_feature_size = drug_dim
         self.expr_hlayers_sizes = expr_hlayers_sizes
@@ -61,7 +63,7 @@ class DenseModel:
         self.input_dropout = input_dropout
         self.hidden_dropout = hidden_dropout
         self.optimizer = optimizer
-        self.learn_rate = learning_rate
+        self.learn_rate = learn_rate
         self.model = self.build_model()
 
     def build_model(self):
@@ -87,9 +89,8 @@ class DenseModel:
 
         # Create the model
         model = tf.keras.Model(inputs=[cell_line_input, drug_input], outputs=final_network)
-        
-        
-# Define optimizer
+
+        # Define optimizer
         opt_class = dict(getmembers(optimizers))[self.optimizer]
         if self.optimizer == 'SGD':
             opt = opt_class(learning_rate=self.learn_rate, decay=1e-6, momentum=0.9, nesterov=True)
@@ -126,49 +127,16 @@ class DenseModel:
     def predict(self, new_cell_line_data, new_drug_data):
         return self.model.predict({'cell_line_input': new_cell_line_data, 'drug_input': new_drug_data})
     
+
+
     
 
-def expr_drug_gat_model(expr_dim=None, drug_dim=None, expr_hlayers_sizes='[10]', drug_n_atom_features=30,
-                        drug_gat_layers='[64, 64]', drug_num_attention_heads=8, drug_concat_heads=True,
-                        drug_residual_connection=True, drug_dropout=0.5, predictor_hlayers_sizes='[10]',
-                        initializer='he_normal', hidden_activation='relu', l1=0, l2=0, input_dropout=0,
-                        hidden_dropout=0, optimizer='Adam', learn_rate=0.001):
-	"""Build a multi-input deep learning model with separate feature-encoding subnetworks for expression and drug
-	inputs. The expression subnetwork uses fully-connected layers and the drug subnetwork is a GAT."""
-	expr_input = Input(shape=expr_dim, name='expr')
-	drugA_nodes_input = Input(shape=(None, drug_n_atom_features), name='drugA_atom_feat')
-	drugA_adjacency_input = Input(shape=(None, None), name='drugA_adj')
 
-	expr = dense_submodel(expr_input, hlayers_sizes=expr_hlayers_sizes, l1_regularization=l1, l2_regularization=l2,
-	                      hidden_activation=hidden_activation, input_dropout=input_dropout,
-	                      hidden_dropout=hidden_dropout)
-	drug_submodel = gat_submodel(n_atom_features=drug_n_atom_features, gat_layers=drug_gat_layers,
-	                             n_attention_heads=drug_num_attention_heads, concat_heads=drug_concat_heads,
-	                             residual=drug_residual_connection, dropout_rate=drug_dropout)
-	drugA = drug_submodel([drugA_nodes_input, drugA_adjacency_input])
 
-	concat = concatenate([expr, drugA])
+DEFAULT_CHAR_DICT_STR = str({'#': 1, '(': 2, ')': 3, '+': 4, '-': 5, '/': 6, '1': 7, '2': 8, '3': 9,
+                             '4': 10, '5': 11, '6': 12, '7': 13, '8': 14,'=': 15, 'C': 16, 'F': 17,
+                             'H': 18, 'I': 19, 'N': 20, 'O': 21, 'P': 22, 'S': 23, '[': 24, '\\': 25,
+                             ']': 26, '_': 27, 'c': 28, 'Cl': 29, 'Br': 30, 'n': 31, 'o': 32, 's': 33,
+                             '.': 34, 'Pt': 35, '@':36, 'B': 37, 'r': 38, 'l': 39, 'a': 40, 'i': 41, '9': 42})
 
-	main_branch = dense_submodel(concat, hlayers_sizes=predictor_hlayers_sizes,
-	                             l1_regularization=l1, l2_regularization=l2,
-	                             hidden_activation=hidden_activation, input_dropout=0,
-	                             hidden_dropout=hidden_dropout)
-	# Add output layer
-	output = Dense(1, activation='linear', kernel_initializer=initializer, name='output')(main_branch)
-
-	# create Model object
-	model = tf.keras.Model(
-		inputs=[expr_input, drugA_nodes_input, drugA_adjacency_input],
-		outputs=[output])
-
-	# Define optimizer
-	opt_class = dict(getmembers(optimizers))[optimizer]
-	if optimizer == 'SGD':
-		opt = opt_class(lr=learn_rate, decay=1e-6, momentum=0.9, nesterov=True)
-	else:
-		opt = opt_class(lr=learn_rate)
-
-	# Compile model
-	model.compile(optimizer=opt, loss='mean_squared_error', metrics=['mae'])
-
-	return model
+    
